@@ -1,0 +1,27 @@
+﻿  MaskGun.cpp
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(28,44): warning C4244: '=': conversion from 'unsigned int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(29,44): warning C4244: '=': conversion from 'unsigned int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(31,56): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(31,42): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(661,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  csc_211_final_proj.vcxproj -> C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\Debug\csc_211_final_proj.exe
