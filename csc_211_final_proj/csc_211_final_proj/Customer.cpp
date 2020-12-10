@@ -13,35 +13,58 @@ void Customer::spawn(float startX, float startY, int type, int seed)
 	switch (type)
 	{
 	case 0:
-		// Bloater
+		// Customer 1
+		customerNumber = 1;
 		m_Sprite = Sprite(TextureHolder::GetTexture(
-			"graphics/bloater.png"));
+			"graphics/customer_1.png"));
 
-		m_Speed = 40;
-		m_Health = 5;
+		m_Speed = 10;
+		m_Health = .1;
 		break;
 
 	case 1:
-		// Chaser
+		// Customer 2
+		customerNumber = 2;
 		m_Sprite = Sprite(TextureHolder::GetTexture(
-			"graphics/chaser.png"));
+			"graphics/customer_2.png"));
 
-		m_Speed = 70;
-		m_Health = 1;
+		m_Speed = 30;
+		m_Health = .1;
 		break;
 
 	case 2:
-		// Crawler
+		// Customer 3
+		customerNumber = 3;
 		m_Sprite = Sprite(TextureHolder::GetTexture(
-			"graphics/crawler.png"));
+			"graphics/customer_3.png"));
 
-		m_Speed = 20;
-		m_Health = 3;
+		m_Speed = 50;
+		m_Health = .1;
+		break;
+
+	case 3:
+		// Customer 4
+		customerNumber = 4;
+		m_Sprite = Sprite(TextureHolder::GetTexture(
+			"graphics/customer_4.png"));
+
+		m_Speed = 70;
+		m_Health = .1;
+		break;
+
+	case 4:
+		// Customer 5
+		customerNumber = 5;
+		m_Sprite = Sprite(TextureHolder::GetTexture(
+			"graphics/customer_5.png"));
+
+		m_Speed = 70;
+		m_Health = .1;
 		break;
 	}
 
-	// Modify the speed to make the zombie unique
-	// Every zombie is unique. Create a speed modifier
+	// Modify the speed to make the customer unique
+	// Every customer is unique. Create a seed modifier
 	srand((int)time(0) * seed);
 	// Somewhere between 80 an 100
 	float modifier = (rand() % MAX_VARRIANCE) + OFFSET;
@@ -64,8 +87,32 @@ bool Customer::hit()
 	{
 		// unmasked
 		m_unMasked = false;
-		m_Sprite.setTexture(TextureHolder::GetTexture(
-			"graphics/blood.png"));
+
+		if (customerNumber == 1)
+		{
+			m_Sprite.setTexture(TextureHolder::GetTexture(
+				"graphics/customer_1_masked.png"));
+		}
+		if (customerNumber == 2)
+		{
+			m_Sprite.setTexture(TextureHolder::GetTexture(
+				"graphics/customer_2_masked.png"));
+		}
+		if (customerNumber == 3)
+		{
+			m_Sprite.setTexture(TextureHolder::GetTexture(
+				"graphics/customer_3_masked.png"));
+		}
+		if (customerNumber == 4)
+		{
+			m_Sprite.setTexture(TextureHolder::GetTexture(
+				"graphics/customer_4_masked.png"));
+		}
+		if (customerNumber == 5)
+		{
+			m_Sprite.setTexture(TextureHolder::GetTexture(
+				"graphics/customer_5_masked.png"));
+		}
 
 		return true;
 	}
@@ -88,6 +135,16 @@ FloatRect Customer::getPosition()
 Sprite Customer::getSprite()
 {
 	return m_Sprite;
+}
+
+int Customer::getSpeed()
+{
+	return m_Speed;
+}
+
+void Customer::setSpeed(int wave)
+{
+	m_Speed = m_Speed + (wave * 20);
 }
 
 void Customer::update(float elapsedTime,

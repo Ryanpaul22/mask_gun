@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "mask.h"
 
+using namespace sf;
+
 
 // The constructor
 Mask::Mask()
 {
-	m_MaskShape.setSize(sf::Vector2f(2, 2));
+	m_MaskShape.setSize(Vector2f(8, 8));
+	m_MaskShape.setFillColor(Color::Cyan);
 }
 
 void Mask::shoot(float startX, float startY,
@@ -78,7 +81,6 @@ RectangleShape Mask::getShape()
 {
 	return m_MaskShape;
 }
-
 
 void Mask::update(float elapsedTime)
 {

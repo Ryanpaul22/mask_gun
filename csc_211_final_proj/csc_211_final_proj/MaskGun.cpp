@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <sstream>
 #include <fstream>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "MaskGun.h"
@@ -14,7 +15,7 @@ using namespace std;
 
 int main()
 {
-	// Here is the instabce of TextureHolder
+	// Here is the instance of TextureHolder
 	TextureHolder holder;
 
 	// The game will always be in one of four states
@@ -54,14 +55,14 @@ int main()
 	VertexArray background;
 	// Load the texture for our background vertex array
 	Texture textureBackground = TextureHolder::GetTexture(
-		"graphics/background_sheet.png");
+		"graphics/mask_gun_background_sheet.png");
 
 	// Prepare for a group of customers
 	int numCustomers;
 	int numCustomersUnMasked;
 	Customer* customers = NULL;
 
-	// 100 bullets should do
+	// 100 masks should do
 	Mask masks[100];
 	int currentMask = 0;
 	int masksSpare = 24;
@@ -82,6 +83,12 @@ int main()
 	Pickup healthPickup(1);
 	Pickup ammoPickup(2);
 
+	// Power up bool
+	Pickup fireRatePowerUp();
+
+	// Instructions bool
+	bool instructions = false;
+
 	// About the game
 	int score = 0;
 	int highScore = 0;
@@ -92,14 +99,17 @@ int main()
 	spriteGameOver.setTexture(textureGameOver);
 	spriteGameOver.setPosition(0, 0);
 
+	// For instructions screen
+	Sprite spriteInstructions;
+	Texture textureInstructions = TextureHolder::GetTexture("graphics/instructions_background.png");
+	spriteInstructions.setTexture(textureInstructions);
+	spriteInstructions.setPosition(0, 0);
+
 	// Create a view for the HUD
 	View hudView(sf::FloatRect(0, 0, resolution.x, resolution.y));
 
-	// Create a sprite for the ammo icon
-	Sprite spriteAmmoIcon;
-	Texture textureAmmoIcon = TextureHolder::GetTexture("graphics/ammo_icon.png");
-	spriteAmmoIcon.setTexture(textureAmmoIcon);
-	spriteAmmoIcon.setPosition(20, 980);
+	// Create a view for the instructions view
+	View instructionsView(sf::FloatRect(0, 0, resolution.x, resolution.y));
 
 	// Load the font
 	Font font;
@@ -126,6 +136,7 @@ int main()
 	gameOverText.setString("Press Enter to Play");
 
 	// Leveling up
+	int wave = 0;
 	Text levelUpText;
 	levelUpText.setFont(font);
 	levelUpText.setCharacterSize(80);
@@ -135,12 +146,14 @@ int main()
 	levelUpText.setPosition(150, 250);
 	stringstream levelUpStream;
 	levelUpStream <<
-		"1- Increased rate of fire" <<
-		"\n2- Increased clip size(next reload)" <<
-		"\n3- Increased max health" <<
-		"\n4- Increased run speed" <<
-		"\n5- More and better health pickups" <<
-		"\n6- More and better ammo pickups";
+		//"1- Increased rate of fire" <<
+		//"\n2- Increased clip size(next reload)" <<
+		"Congratulations!"
+		"\nLevel passed! Choose Upgrade:"
+		"\n1- Increased max health" <<
+		"\n2- Increased run speed" <<
+		"\n3- More and better health pickups" <<
+		"\n4- More frequent mask powerups";
 	levelUpText.setString(levelUpStream.str());
 
 	// Ammo
@@ -161,7 +174,7 @@ int main()
 	scoreText.setOutlineColor(Color::Black);
 	scoreText.setPosition(20, 0);
 
-	// Load the high score from a text file/
+	// Load the high score from a text file
 	ifstream inputFile("gamedata/scores.txt");
 	if (inputFile.is_open())
 	{
@@ -192,7 +205,6 @@ int main()
 	customersRemainingText.setString("Customers: 100");
 
 	// Wave number
-	int wave = 0;
 	Text waveNumberText;
 	waveNumberText.setFont(font);
 	waveNumberText.setCharacterSize(55);
@@ -202,9 +214,28 @@ int main()
 	waveNumberText.setPosition(1250, 980);
 	waveNumberText.setString("Wave: 0");
 
+	// Instructions
+	Text instructionsText;
+	instructionsText.setFont(font);
+	instructionsText.setCharacterSize(55);
+	instructionsText.setFillColor(Color::White);
+	instructionsText.setOutlineThickness(5);
+	instructionsText.setOutlineColor(Color::Black);
+	instructionsText.setPosition(1250, 850);
+	instructionsText.setString("Press G for Guide");
+
+	Text homeText;
+	homeText.setFont(font);
+	homeText.setCharacterSize(55);
+	homeText.setFillColor(Color::White);
+	homeText.setOutlineThickness(5);
+	homeText.setOutlineColor(Color::Black);
+	homeText.setPosition(1250, 850);
+	homeText.setString("Press H for Home");
+
 	// Health bar
 	RectangleShape healthBar;
-	healthBar.setFillColor(Color::Red);
+	healthBar.setFillColor(Color::Green);
 	healthBar.setPosition(450, 980);
 
 	// When did we last update the HUD?
@@ -220,29 +251,11 @@ int main()
 	Sound hit;
 	hit.setBuffer(hitBuffer);
 
-	// Prepare the splat sound
-	SoundBuffer splatBuffer;
-	splatBuffer.loadFromFile("sound/splat.wav");
-	sf::Sound splat;
-	splat.setBuffer(splatBuffer);
-
 	// Prepare the shoot sound
 	SoundBuffer shootBuffer;
 	shootBuffer.loadFromFile("sound/shoot.wav");
 	Sound shoot;
 	shoot.setBuffer(shootBuffer);
-
-	// Prepare the reload sound
-	SoundBuffer reloadBuffer;
-	reloadBuffer.loadFromFile("sound/reload.wav");
-	Sound reload;
-	reload.setBuffer(reloadBuffer);
-
-	// Prepare the failed sound
-	SoundBuffer reloadFailedBuffer;
-	reloadFailedBuffer.loadFromFile("sound/reload_failed.wav");
-	Sound reloadFailed;
-	reloadFailed.setBuffer(reloadFailedBuffer);
 
 	// Prepare the powerup sound
 	SoundBuffer powerupBuffer;
@@ -271,8 +284,23 @@ int main()
 		{
 			if (event.type == Event::KeyPressed)
 			{
+				// View instructions
+				if (event.key.code == Keyboard::G &&
+					state == State::GAME_OVER &&
+					instructions == false)
+				{
+					instructions = true;
+				}
+
+				else if (event.key.code == Keyboard::H &&
+					state == State::GAME_OVER &&
+					instructions == true)
+				{
+					instructions = false;
+				}
+
 				// Pause a game while playing
-				if (event.key.code == Keyboard::Return &&
+				else if (event.key.code == Keyboard::Return &&
 					state == State::PLAYING)
 				{
 					state = State::PAUSED;
@@ -291,11 +319,11 @@ int main()
 				else if (event.key.code == Keyboard::Return &&
 					state == State::GAME_OVER)
 				{
-					state = State::LEVELING_UP;
+					state = State::LEVELING_UP;					
 					wave = 0;
 					score = 0;
 
-					// Prepare the gun and ammo for next game
+					// Prepare the gun and masks for next game
 					currentMask = 0;
 					masksSpare = 24;
 					masksInClip = 6;
@@ -304,6 +332,7 @@ int main()
 
 					// Reset the player's stats
 					player.resetPlayerStats();
+
 				}
 				// Spin and zoom the world
 
@@ -328,32 +357,6 @@ int main()
 				}
 				// End spinning and zooming
 
-				if (state == State::PLAYING)
-				{
-					// Reloading
-					if (event.key.code == Keyboard::R)
-					{
-						if (masksSpare >= clipSize)
-						{
-							// Plenty of bullets. Reload.
-							masksInClip = clipSize;
-							masksSpare -= clipSize;
-							reload.play();
-						}
-						else if (masksSpare > 0)
-						{
-							// Only few bullets left
-							masksInClip = masksSpare;
-							masksSpare = 0;
-							reload.play();
-						}
-						else
-						{
-							// More here soon?!
-							reloadFailed.play();
-						}
-					}
-				}
 
 			}
 		}// End event polling
@@ -406,7 +409,7 @@ int main()
 			}
 
 			// Fire a mask
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			if (Mouse::isButtonPressed(       Mouse::Left))
 			{
 
 				if (gameTimeTotal.asMilliseconds()
@@ -427,7 +430,7 @@ int main()
 					}
 					lastPressed = gameTimeTotal;
 					shoot.play();
-					masksInClip--;
+					// masksInClip--;
 				}
 
 			}// End fire a mask
@@ -437,46 +440,41 @@ int main()
 		// Handle the leveling up state
 		if (state == State::LEVELING_UP)
 		{
-			// Handle the player levelling up
-			if (event.key.code == Keyboard::Num1)
+			// Handle the player leveling up
+
+			if (wave != 0) 
 			{
-				// Increase fire rate
-				fireRate++;
+				if (event.key.code == Keyboard::Num1)
+				{
+					// Increase health
+					player.upgradeHealth();
+					state = State::PLAYING;
+				}
+
+				if (event.key.code == Keyboard::Num2)
+				{
+					// Increase speed
+					player.upgradeSpeed();
+					state = State::PLAYING;
+				}
+
+				if (event.key.code == Keyboard::Num3)
+				{
+					healthPickup.upgrade();
+					state = State::PLAYING;
+				}
+
+				if (event.key.code == Keyboard::Num4)
+				{
+					ammoPickup.upgrade();
+					state = State::PLAYING;
+				}
+			}
+			if (wave == 0)
+			{
 				state = State::PLAYING;
 			}
 
-			if (event.key.code == Keyboard::Num2)
-			{
-				// Increase clip size
-				clipSize += clipSize;
-				state = State::PLAYING;
-			}
-
-			if (event.key.code == Keyboard::Num3)
-			{
-				// Increase health
-				player.upgradeHealth();
-				state = State::PLAYING;
-			}
-
-			if (event.key.code == Keyboard::Num4)
-			{
-				// Increase speed
-				player.upgradeSpeed();
-				state = State::PLAYING;
-			}
-
-			if (event.key.code == Keyboard::Num5)
-			{
-				healthPickup.upgrade();
-				state = State::PLAYING;
-			}
-
-			if (event.key.code == Keyboard::Num6)
-			{
-				ammoPickup.upgrade();
-				state = State::PLAYING;
-			}
 
 			if (state == State::PLAYING)
 			{
@@ -484,8 +482,8 @@ int main()
 				wave++;
 
 				// Prepare the level
-				arena.width = 500 * wave;
-				arena.height = 500 * wave;
+				arena.width = 500 * (wave * .75);
+				arena.height = 500 * (wave * .75);
 				arena.left = 0;
 				arena.top = 0;
 
@@ -500,13 +498,19 @@ int main()
 				healthPickup.setArena(arena);
 				ammoPickup.setArena(arena);
 
-				// Create a horde of zombies
-				numCustomers = 5 * wave;
+				// Create a horde of customers
+				numCustomers = 5 * (wave * 1.5);
 
 				// Delete the previously allocated memory (if it exists)
 				delete[] customers;
 				customers = createCustomers(numCustomers, arena);
 				numCustomersUnMasked = numCustomers;
+
+				// Set customer speed
+				for (int i = 0; i < numCustomers; i++)
+				{
+					customers[i].setSpeed(wave);
+				}
 
 				// Play the powerup sound
 				powerup.play();
@@ -514,7 +518,7 @@ int main()
 				// Reset the clock so there isn't a frame jump
 				clock.restart();
 			}
-		}// End levelling up
+		}// End leveling up
 
 		 /*
 		 ****************
@@ -523,6 +527,18 @@ int main()
 		 */
 		if (state == State::PLAYING)
 		{
+			// fire rate power up
+			ammoPickup.powerUp();
+
+			if (ammoPickup.getPowerUp() == true)
+			{
+				fireRate = 5;
+			}
+
+			if (ammoPickup.getPowerUp() == false) {
+				fireRate = 1;
+			}
+
 			// Update the delta time
 			Time dt = clock.restart();
 			// Update the total game time
@@ -546,10 +562,11 @@ int main()
 			// Make a note of the players new position
 			Vector2f playerPosition(player.getCenter());
 
-			// Make the view centre around the player				
+			// Make the view center around the player				
 			mainView.setCenter(player.getCenter());
 
-			// Loop through each Zombie and update them
+			// Loop through each Customer and update them
+
 			for (int i = 0; i < numCustomers; i++)
 			{
 				if (customers[i].isUnMasked())
@@ -558,7 +575,7 @@ int main()
 				}
 			}
 
-			// Update any bullets that are in-flight
+			// Update any masks that are in-flight
 			for (int i = 0; i < 100; i++)
 			{
 				if (masks[i].isInFlight())
@@ -586,11 +603,11 @@ int main()
 							// Stop the mask
 							masks[i].stop();
 
-							// Register the hit and see if it was a kill
+							// Register the hit 
 							if (customers[j].hit()) {
-								// Not just a hit but a kill too
+								
 								score += 10;
-								if (score >= highScore)
+								if (score > highScore)
 								{
 									highScore = score;
 								}
@@ -602,17 +619,12 @@ int main()
 									state = State::LEVELING_UP;
 								}
 							}
-
-							// Make a splat sound
-							splat.play();
-
 						}
 					}
-
 				}
-			}// End zombie being shot
+			}// End customer being shot
 
-			// Have any zombies touched the player			
+			// Have any customers touched the player			
 			for (int i = 0; i < numCustomers; i++)
 			{
 				if (player.getPosition().intersects
@@ -620,15 +632,14 @@ int main()
 				{
 
 					if (player.hit(gameTimeTotal))
-					{
-						// More here later
+					{					
 						hit.play();
 					}
 
 					if (player.getHealth() <= 0)
 					{
 						state = State::GAME_OVER;
-
+						instructions = false;
 						ofstream outputFile("gamedata/scores.txt");
 						outputFile << highScore;
 						outputFile.close();
@@ -652,8 +663,6 @@ int main()
 			(ammoPickup.getPosition()) && ammoPickup.isSpawned())
 			{
 				masksSpare += ammoPickup.gotIt();
-				// Play a sound
-				reload.play();
 
 			}
 
@@ -718,7 +727,7 @@ int main()
 			// Draw the background
 			window.draw(background, &textureBackground);
 
-			// Draw the zombies
+			// Draw the customers
 			for (int i = 0; i < numCustomers; i++)
 			{
 				window.draw(customers[i].getSprite());
@@ -752,8 +761,7 @@ int main()
 			window.setView(hudView);
 
 			// Draw all the HUD elements
-			window.draw(spriteAmmoIcon);
-			window.draw(ammoText);
+			
 			window.draw(scoreText);
 			window.draw(highScoreText);
 			window.draw(healthBar);
@@ -763,8 +771,17 @@ int main()
 
 		if (state == State::LEVELING_UP)
 		{
-			window.draw(spriteGameOver);
-			window.draw(levelUpText);
+			if (wave == 0) 
+			{
+				window.draw(spriteGameOver);
+			}
+
+			else 
+			{
+				window.draw(spriteGameOver);
+				window.draw(levelUpText);
+			}
+			
 		}
 
 		if (state == State::PAUSED)
@@ -772,12 +789,21 @@ int main()
 			window.draw(pausedText);
 		}
 
-		if (state == State::GAME_OVER)
+		if (state == State::GAME_OVER && !instructions)
 		{
 			window.draw(spriteGameOver);
 			window.draw(gameOverText);
 			window.draw(scoreText);
 			window.draw(highScoreText);
+			window.draw(instructionsText);
+		}
+
+		if (state == State::GAME_OVER && instructions)
+		{
+			window.setView(instructionsView);
+			window.draw(spriteInstructions);
+			window.draw(homeText);
+			window.draw(gameOverText);
 		}
 
 		window.display();

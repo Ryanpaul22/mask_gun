@@ -1,27 +1,39 @@
 ﻿  MaskGun.cpp
-C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(28,44): warning C4244: '=': conversion from 'unsigned int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
 C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(29,44): warning C4244: '=': conversion from 'unsigned int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(31,56): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(30,44): warning C4244: '=': conversion from 'unsigned int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(31,42): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(32,56): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(661,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(32,42): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
           with
           [
               T=float
           ]
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(485,23): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=int
+          ]
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(486,24): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=int
+          ]
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(502,22): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(670,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\csc_211_final_proj\MaskGun.cpp(87,9): warning C4930: 'Pickup fireRatePowerUp(void)': prototyped function not called (was a variable definition intended?)
   csc_211_final_proj.vcxproj -> C:\Users\Ryan\Documents\visual_studio_stuff\projects\csc_211_final_proj\Debug\csc_211_final_proj.exe
