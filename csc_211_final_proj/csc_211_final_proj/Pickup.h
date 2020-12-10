@@ -9,8 +9,8 @@ private:
 	//Start value for health pickups
 	const int HEALTH_START_VALUE = 50;
 	const int AMMO_START_VALUE = 12;
-	const int START_WAIT_TIME = 10;
-	const int START_SECONDS_TO_LIVE = 5;
+	const int START_WAIT_TIME = 30;
+	const int START_SECONDS_TO_LIVE = 100;
 
 	// The sprite that represents this pickup
 	Sprite m_Sprite;
@@ -31,6 +31,9 @@ private:
 	float m_SecondsSinceDeSpawn;
 	float m_SecondsToLive;
 	float m_SecondsToWait;
+
+	// fire rate power up
+	bool m_FireRatePowerUp;
 
 	// Public prototypes go here
 public:
@@ -56,6 +59,12 @@ public:
 
 	// Get the goodness from the pickup
 	int gotIt();
+
+	// fire rate power up
+	void powerUp();
+
+	// bool get power up
+	bool getPowerUp();
 
 	// Upgrade the value of each pickup
 	void upgrade();

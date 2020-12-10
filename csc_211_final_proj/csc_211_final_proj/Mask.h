@@ -14,9 +14,12 @@ private:
 
 	// Is this mask currently whizzing through the air
 	bool m_InFlight = false;
+	
+	// What is the size of each mask?
+	Vector2f m_MaskSize;
 
 	// How fast does a mask travel?
-	float m_MaskSpeed = 1000;
+	float m_MaskSpeed = 500;
 
 	// What fraction of 1 pixel does the mask travel, 
 	// Horizontally and vertically each frame?
@@ -39,13 +42,13 @@ public:
 	// The constructor
 	Mask();
 
-	// Stop the bullet
+	// Stop the mask
 	void stop();
 
 	// Returns the value of m_InFlight
 	bool isInFlight();
 
-	// Launch a new bullet
+	// Launch a new mask
 	void shoot(float startX, float startY,
 		float xTarget, float yTarget);
 
@@ -55,7 +58,7 @@ public:
 	// Return the actual shape (for drawing)
 	RectangleShape getShape();
 
-	// Update the bullet each frame
+	// Update the mask each frame
 	void update(float elapsedTime);
 
 };

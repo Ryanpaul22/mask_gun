@@ -46,9 +46,9 @@ Customer* createCustomers(int numCustomers, IntRect arena)
 			break;
 		}
 
-		// Adult, teen, or baby
+		// Type of customer
 		srand((int)time(0) * i * 2);
-		int type = (rand() % 3);
+		int type = (rand() % 5);
 
 		// Spawn the new customer into the array
 		customers[i].spawn(x, y, type, i);

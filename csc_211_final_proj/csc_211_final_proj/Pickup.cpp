@@ -20,7 +20,7 @@ Pickup::Pickup(int type)
 	else
 	{
 		m_Sprite = Sprite(TextureHolder::GetTexture(
-			"graphics/ammo_pickup.png"));
+			"graphics/mask.png"));
 
 		// How much is pickup worth
 		m_Value = AMMO_START_VALUE;
@@ -47,13 +47,14 @@ void Pickup::setArena(IntRect arena)
 void Pickup::spawn()
 {
 	// Spawn at a random location
+
 	srand((int)time(0) / m_Type);
 	int x = (rand() % m_Arena.width);
 	srand((int)time(0) * m_Type);
 	int y = (rand() % m_Arena.height);
 
 	// Not currently spawned
-	//m_Spawned = false;
+	// m_Spawned = false;
 	m_SecondsSinceSpawn = 0;
 	m_Spawned = true;
 
@@ -80,6 +81,24 @@ int Pickup::gotIt()
 	m_Spawned = false;
 	m_SecondsSinceDeSpawn = 0;
 	return m_Value;
+}
+
+void Pickup::powerUp()
+{
+	if (m_SecondsSinceDeSpawn <= 2 && !m_Spawned)
+	{
+		m_FireRatePowerUp = true;
+	}
+
+	else
+	{
+		m_FireRatePowerUp = false;
+	}
+}
+
+bool Pickup::getPowerUp()
+{
+	return m_FireRatePowerUp;
 }
 
 void Pickup::update(float elapsedTime)
